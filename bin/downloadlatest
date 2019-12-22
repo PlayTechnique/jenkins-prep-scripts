@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+VERSION=2.209
+
+JENKINS_LTS_SHA256=ee4857a5d9221b5046d9533f4f134a997034fd8907b0a9788734a48c859d2319
+JENKINS_LTS_URL=https://updates.jenkins-ci.org/download/war/${VERSION}/jenkins.war
+
+curl -O ${JENKINS_LTS_URL}
+
+SHASUM=$(sha256sum jenkins.war | awk '{ print $1 }')
+
+[ "${DOWNLOADED}" = "${JENKINS_LTS_SHA256}" ]
