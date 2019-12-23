@@ -2,13 +2,34 @@
 
 set -e
 
-VERSION=2.209
+OUTPUT_PATH=$1
 
-JENKINS_LTS_SHA256=ee4857a5d9221b5046d9533f4f134a997034fd8907b0a9788734a48c859d2319
+function usage() {
+  cat <<EOS
+  This script uses the environment for configuration. \n
+  OUTPUT_PATH - Where you'd like the jenkins.war file to end up.
+EOS
+}
+
+if [ ! -d "${OUTPUT_PATH}" ]; then
+  echo "<${OUTPUT_PATH}> does not exist!" >&2
+  echo -e $(usage) >&2
+  exit 1
+fi
+
+VERSION=2.210
+WAR_PATH="${OUTPUT_PATH}/jenkins.war"
+
+JENKINS_LTS_SHA256=693d692bc4485d6f18d0579f93d6430e4ccd34dcb1972e7059fd1dd590e1ddb7
 JENKINS_LTS_URL=https://updates.jenkins-ci.org/download/war/${VERSION}/jenkins.war
 
-curl -O ${JENKINS_LTS_URL}
+cd ${OUTPUT_PATH}
 
-SHASUM=$(sha256sum jenkins.war | awk '{ print $1 }')
+curl --silent -L -O ${JENKINS_LTS_URL}
 
-[ "${DOWNLOADED}" = "${JENKINS_LTS_SHA256}" ]
+SHASUM=$(sha256sum ${OUTPUT_PATH}/jenkins.war | awk '{ print $1 }')
+
+if [ "${SHASUM}" != "${JENKINS_LTS_SHA256}" ]; then
+  echo "Corrupt download of jenkins war! REMOVING" >&2
+  exit 2
+fi
