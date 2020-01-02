@@ -2,8 +2,6 @@
 
 set -e
 
-OUTPUT_PATH=$1
-
 function usage() {
   cat <<EOS
   This script uses the environment for configuration. \n
